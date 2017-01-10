@@ -22,7 +22,7 @@ function varargout = picturecrop(varargin)
 
 % Edit the above text to modify the response to help picturecrop
 
-% Last Modified by GUIDE v2.5 23-Dec-2016 14:01:00
+% Last Modified by GUIDE v2.5 10-Jan-2017 21:01:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -163,12 +163,17 @@ function save_Callback(hObject, eventdata, handles)
 % hObject    handle to save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+AnnotationPath = 'Annotations';
 if(isempty(handles.rect)~=1)
     tempRect = handles.rect;
 
     if(~handles.xmlBusy)
         handles.xmlBusy = true;
-        handles.xmlFile = fopen([handles.savePath,'/',handles.currentImageFileName(1:end-4),'.xml'],'w');
+        
+        if(exist([handles.savePath,'\',AnnotationPath],'dir')~=7)
+           mkdir([handles.savePath,'\',AnnotationPath]);
+        end
+        handles.xmlFile = fopen([handles.savePath,'\',AnnotationPath,'\',handles.currentImageFileName(1:end-4),'.xml'],'w');
         fprintf(handles.xmlFile,'<annotation>\n\t<folder>VOC2007</folder>\n\t<filename>%s</filename>\n\t<source>\n\t\t<database>The VOC2007 Database</database>\n\t\t<annotation>PASCAL VOC2007</annotation>\n\t\t<image>flickr</image>\n\t\t<flickrid>NULL</flickrid>\n\t</source>\n\t<owner>\n\t\t<flickrid>VIP-G</flickrid>\n\t\t<name>?</name>\n\t</owner>\n\t<size>\n\t\t<width>%d</width>\n\t\t<height>%d</heigt>\n\t\t<depth>3</depth>\n\t</size>\n\t<segmented>%d</segmented>\n',...
             handles.currentImageFileName,handles.currentImageSize.width,handles.currentImageSize.height,0);
     end
@@ -719,3 +724,61 @@ function renameDigitNum_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton14.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if(exist([handles.savePath,'\ImageSets'],'dir')~=7)
+    mkdir([handles.savePath,'\ImageSets']);
+    if(exist([handles.savePath,'\ImageSets\Main'],'dir')~=7)
+        mkdir([handles.savePath,'\ImageSets\Main']);
+    end
+end
+
+file = dir([handles.savePath,'\Annotations\']);
+len = length(file)-2;
+
+
+num_trainval=sort(randperm(len, floor(9*len/10)));%trainval集占所有数据的9/10，可以根据需要设置
+num_train=sort(num_trainval(randperm(length(num_trainval), floor(5*length(num_trainval)/6))));%train集占trainval集的5/6，可以根据需要设置
+num_val=setdiff(num_trainval,num_train);%trainval集剩下的作为val集
+num_test=setdiff(1:len,num_trainval);%所有数据中剩下的作为test集
+
+
+path = [handles.savePath,'\ImageSets\Main\'];
+
+
+fid=fopen(strcat(path, 'trainval.txt'),'a+');
+for i=1:length(num_trainval)
+    s = sprintf('%s',file(num_trainval(i)+2).name);
+    fprintf(fid,[s(1:length(s)-4) '\r\n']);
+end
+fclose(fid);
+
+
+fid=fopen(strcat(path, 'train.txt'),'a+');
+for i=1:length(num_train)
+    s = sprintf('%s',file(num_train(i)+2).name);
+    fprintf(fid,[s(1:length(s)-4) '\r\n']);
+end
+fclose(fid);
+
+
+fid=fopen(strcat(path, 'val.txt'),'a+');
+for i=1:length(num_val)
+    s = sprintf('%s',file(num_val(i)+2).name);
+    fprintf(fid,[s(1:length(s)-4) '\r\n']);
+end
+fclose(fid);
+
+
+fid=fopen(strcat(path, 'test.txt'),'a+');
+for i=1:length(num_test)
+    s = sprintf('%s',file(num_test(i)+2).name);
+    fprintf(fid,[s(1:length(s)-4) '\r\n']);
+end
+fclose(fid);
+
