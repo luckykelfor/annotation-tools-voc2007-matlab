@@ -115,6 +115,14 @@ function search_Callback(hObject, eventdata, handles)
 if(filename == 0)
     return;
 end
+
+if(handles.xmlBusy)
+        fprintf(handles.xmlFile,'</annotation>');
+        fclose(handles.xmlFile);
+        handles.xmlBusy = false;
+    
+end
+
 handles.currentImageFileNameFull = [pathname,filename];
 handles.currentImageFileName = filename;
 handles.zoomInCount = 10;
@@ -361,6 +369,13 @@ path =        uigetdir('./');
 if(path == 0)
     return;
 end
+
+if(handles.xmlBusy)
+        fprintf(handles.xmlFile,'</annotation>');
+        fclose(handles.xmlFile);
+        handles.xmlBusy = false;
+end
+
 handles.savePath = path;
 guidata(hObject,handles);%记得更新数据
 
