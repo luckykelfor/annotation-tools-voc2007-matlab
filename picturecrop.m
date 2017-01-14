@@ -170,10 +170,10 @@ if(isempty(handles.rect)~=1)
     if(~handles.xmlBusy)
         handles.xmlBusy = true;
         
-        if(exist([handles.savePath,'\',AnnotationPath],'dir')~=7)
-           mkdir([handles.savePath,'\',AnnotationPath]);
+        if(exist([handles.savePath,'/',AnnotationPath],'dir')~=7)
+           mkdir([handles.savePath,'/',AnnotationPath]);
         end
-        handles.xmlFile = fopen([handles.savePath,'\',AnnotationPath,'\',handles.currentImageFileName(1:end-4),'.xml'],'w');
+        handles.xmlFile = fopen([handles.savePath,'/',AnnotationPath,'/',handles.currentImageFileName(1:end-4),'.xml'],'w');
         fprintf(handles.xmlFile,'<annotation>\n\t<folder>VOC2007</folder>\n\t<filename>%s</filename>\n\t<source>\n\t\t<database>The VOC2007 Database</database>\n\t\t<annotation>PASCAL VOC2007</annotation>\n\t\t<image>flickr</image>\n\t\t<flickrid>NULL</flickrid>\n\t</source>\n\t<owner>\n\t\t<flickrid>VIP-G</flickrid>\n\t\t<name>?</name>\n\t</owner>\n\t<size>\n\t\t<width>%d</width>\n\t\t<height>%d</heigt>\n\t\t<depth>3</depth>\n\t</size>\n\t<segmented>%d</segmented>\n',...
             handles.currentImageFileName,handles.currentImageSize.width,handles.currentImageSize.height,0);
     end
@@ -731,14 +731,14 @@ function pushbutton14_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if(exist([handles.savePath,'\ImageSets'],'dir')~=7)
-    mkdir([handles.savePath,'\ImageSets']);
-    if(exist([handles.savePath,'\ImageSets\Main'],'dir')~=7)
-        mkdir([handles.savePath,'\ImageSets\Main']);
+if(exist([handles.savePath,'/ImageSets'],'dir')~=7)
+    mkdir([handles.savePath,'/ImageSets']);
+    if(exist([handles.savePath,'/ImageSets/Main'],'dir')~=7)
+        mkdir([handles.savePath,'/ImageSets/Main']);
     end
 end
 
-file = dir([handles.savePath,'\Annotations\']);
+file = dir([handles.savePath,'/Annotations/']);
 len = length(file)-2;
 
 
@@ -748,7 +748,7 @@ num_val=setdiff(num_trainval,num_train);%trainval集剩下的作为val集
 num_test=setdiff(1:len,num_trainval);%所有数据中剩下的作为test集
 
 
-path = [handles.savePath,'\ImageSets\Main\'];
+path = [handles.savePath,'/ImageSets/Main/'];
 
 
 fid=fopen(strcat(path, 'trainval.txt'),'a+');
